@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/http-jsonp.min.js" type="text/javascript" charset="utf-8"></script>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+		<link rel="stylesheet" type="text/css" href="css/main.css"/>
+	</head>
+	<body>
+		<div id="app">
+			<div v-if="isload">
+				<div class="head">
+					<div class="w-time">
+						更新至 <span>{{lastUpdateTime}}</span>
+					</div>
+					<div class="explain">数据说明</div>
+				</div>
+				<div class="w-content">
+					<div>
+						<div class="title">现有确诊</div>
+						<span class="total">{{chinaTotal.nowConfirm}}</span>
+						<div class="add">昨日 <span>{{chinaAdd.nowConfirm}}</span></div>
+					</div>
+					<div>
+						<div class="title">现有疑似</div>
+						<span class="total">{{chinaTotal.suspect}}</span>
+						<div class="add">昨日 <span>{{chinaAdd.suspect}}</span></div>
+					</div>
+					<div>
+						<div class="title">现有重症</div>
+						<span class="total">{{chinaTotal.nowSevere}}</span>
+						<div class="add">昨日 <span>{{chinaAdd.nowSevere}}</span></div>
+					</div>
+					<div>
+						<div class="title">累计确诊</div>
+						<span class="total">{{chinaTotal.confirm}}</span>
+						<div class="add">昨日 <span>+{{chinaAdd.confirm}}</span></div>
+					</div>
+					<div>
+						<div class="title">累计治愈</div>
+						<span class="total">{{chinaTotal.heal}}</span>
+						<div class="add">昨日 <span>+{{chinaAdd.heal}}</span></div>
+					</div>
+					<div>
+						<div class="title">累计死亡</div>
+						<span class="total">{{chinaTotal.dead}}</span>
+						<div class="add">昨日 <span>+{{chinaAdd.dead}}</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				isload: false,
+				lastUpdateTime: null,
+				chinaAdd: {},
+				chinaTotal: {},
+			},
+			methods: {
+
+			},
+			created() {
+				let _self = this;
+				httpJsonp({
+					url: "https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5",
+					callbackProp: "callback",
+					callback: function(res) {
+						console.log("callback", JSON.parse(res.data));
+						let data = JSON.parse(res.data);
+						_self.isload = true;
+						_self.lastUpdateTime = data.lastUpdateTime;
+						_self.chinaAdd = data.chinaAdd;
+						_self.chinaTotal = data.chinaTotal;
+					},
+					error: function(err) {
+						console.log(err);
+					},
+					complete: function() {
+						console.log("complete");
+					}
+				});
+				console.log('vue is running');
+			}
+		})
+	</script>
+</html>
